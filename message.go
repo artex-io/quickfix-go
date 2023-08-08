@@ -109,7 +109,7 @@ type Message struct {
 // ToMessage returns the message itself.
 func (m *Message) ToMessage() *Message { return m }
 
-// GetFields returns fields as they appear in the raw message
+// GetFields returns fields as they appear in the raw message.
 func (m *Message) GetFields() []TagValue { return m.fields }
 
 // parseError is returned when bytes cannot be parsed as a FIX message.
