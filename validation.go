@@ -137,11 +137,11 @@ func validateFIXT(transportDD, appDD *datadictionary.DataDictionary, settings Va
 	}
 
 	if settings.RejectInvalidMessage {
-		if err := validateWalk(transportDD, appDD, msgType, msg); err != nil {
+		if err := validateFields(transportDD, appDD, msgType, msg); err != nil {
 			return err
 		}
 
-		if err := validateFields(transportDD, appDD, msgType, msg); err != nil {
+		if err := validateWalk(transportDD, appDD, msgType, msg); err != nil {
 			return err
 		}
 	}
