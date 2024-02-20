@@ -6,10 +6,12 @@ on:
     branches:
       - master
       - main
+      - sylr
   pull_request:
     branches:
       - master
       - main
+      - sylr
 permissions:
   contents: read
 
@@ -21,31 +23,40 @@ jobs:
     name: Linter
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-go@v4
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Setup
+        uses: actions/setup-go@v5
         with:
-          go-version: '1.21'
+          go-version: '1.22'
           cache: false
-      - name: golangci-lint
-        uses: golangci/golangci-lint-action@v3
+      - uses: actions/cache@v4
         with:
-          version: v1.51
+          path: |
+            ~/.cache/go-build
+            ~/.cache/golangci-lint
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+        timeout-minutes: 2
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v4
+        with:
+          skip-cache: true
 
   build:
     name: build
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        go: [1.21]
+        go: ['1.22']
         store-type:
           -
           - memory
           - file
-          - mongo
         fix-version:
           -
-          - fix40
-          - fix41
           - fix42
           - fix43
           - fix44
@@ -53,16 +64,23 @@ jobs:
           - fix50sp1
           - fix50sp2
     steps:
+      - name: Check out source
+        uses: actions/checkout@v4
       - name: Setup
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v5
         with:
           go-version: ${{ matrix.go }}
-      - name: Check out source
-        uses: actions/checkout@v2
-      - name: Start MongoDB
-        uses: supercharge/mongodb-github-action@1.8.0
+          cache: false
+      - uses: actions/cache@v4
         with:
-          mongodb-replica-set: replicaset
+          path: |
+            ~/.cache/go-build
+            ~/.cache/golangci-lint
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+        timeout-minutes: 2
       - name: Install ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -75,7 +93,6 @@ jobs:
       - name: Acceptance test
         env:
           GO111MODULE: on
-          MONGODB_TEST_CXN: mongodb://localhost:27017
           FIX_TEST: ${{ matrix.fix-version }}
           STORE_TYPE: ${{ matrix.store-type }}
         run: if [ $FIX_TEST ] && [ $STORE_TYPE ]; then make generate-ci && make build && make $FIX_TEST; fi

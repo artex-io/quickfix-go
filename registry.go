@@ -43,12 +43,24 @@ func Send(m Messagable) (err error) {
 		return err
 	}
 
+	var targetSubID FIXString
+	msg.Header.GetField(tagTargetSubID, &targetSubID)
+
 	var senderCompID FIXString
 	if err := msg.Header.GetField(tagSenderCompID, &senderCompID); err != nil {
 		return err
 	}
 
-	sessionID := SessionID{BeginString: string(beginString), TargetCompID: string(targetCompID), SenderCompID: string(senderCompID)}
+	var senderSubID FIXString
+	msg.Header.GetField(tagSenderSubID, &senderSubID)
+
+	sessionID := SessionID{
+		BeginString:  string(beginString),
+		TargetCompID: string(targetCompID),
+		TargetSubID:  string(targetSubID),
+		SenderCompID: string(senderCompID),
+		SenderSubID:  string(senderSubID),
+	}
 
 	return SendToTarget(msg, sessionID)
 }
@@ -62,6 +74,17 @@ func SendToTarget(m Messagable, sessionID SessionID) error {
 	}
 
 	return session.queueForSend(msg)
+}
+
+// SendReject is a helper function which allows to send an error outside of the
+// quickfix application methods. Useful when doing asynchronous work.
+func SendReject(m *Message, sessionID SessionID, rej MessageRejectError) error {
+	session, ok := lookupSession(sessionID)
+	if !ok {
+		return errUnknownSession
+	}
+
+	return session.doReject(m, rej)
 }
 
 // ResetSession resets session's sequence numbers.

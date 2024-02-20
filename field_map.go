@@ -84,6 +84,16 @@ func (m FieldMap) Tags() []Tag {
 	return tags
 }
 
+// Values returns the tag values.
+//
+//nolint:revive
+func (m FieldMap) Values(t Tag) field {
+	m.rwLock.RLock()
+	defer m.rwLock.RUnlock()
+
+	return m.tagLookup[t]
+}
+
 // Get parses out a field in this FieldMap. Returned reject may indicate the field is not present, or the field value is invalid.
 func (m FieldMap) Get(parser Field) MessageRejectError {
 	return m.GetField(parser.Tag(), parser)
