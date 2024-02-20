@@ -61,9 +61,6 @@ type FieldMap struct {
 // ascending tags.
 func normalFieldOrder(i, j Tag) bool { return i < j }
 
-// do not sort tags
-func noSortOrder(i, j Tag) bool { return false }
-
 func (m *FieldMap) init() {
 	m.initWithOrdering(normalFieldOrder)
 }
@@ -88,6 +85,8 @@ func (m FieldMap) Tags() []Tag {
 }
 
 // Values returns the tag values.
+//
+//nolint:revive
 func (m FieldMap) Values(t Tag) field {
 	m.rwLock.RLock()
 	defer m.rwLock.RUnlock()
@@ -236,6 +235,14 @@ func (m *FieldMap) SetInt(tag Tag, value int) *FieldMap {
 // SetString is a SetField wrapper for string fields.
 func (m *FieldMap) SetString(tag Tag, value string) *FieldMap {
 	return m.SetBytes(tag, []byte(value))
+}
+
+// Remove removes a tag from field map.
+func (m *FieldMap) Remove(tag Tag) {
+	m.rwLock.Lock()
+	defer m.rwLock.Unlock()
+
+	delete(m.tagLookup, tag)
 }
 
 // Clear purges all fields from field map.
