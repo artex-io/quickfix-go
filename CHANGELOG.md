@@ -1,4 +1,56 @@
+## 0.9.6 (September 20, 2024)
+
+### ENHANCEMENTS
+* Allow the clients of acceptor to specify their own tls.Config https://github.com/quickfixgo/quickfix/pull/667
+* Adds NextExpectedSeqNum setting https://github.com/quickfixgo/quickfix/pull/668
+
+### BUG FIXES
+* Reinit stop sync to prevent deadlock on sequential start/stops https://github.com/quickfixgo/quickfix/pull/669
+* Check logon auth before resetting store https://github.com/quickfixgo/quickfix/pull/670
+* Reverts ToAdmin call sequencing https://github.com/quickfixgo/quickfix/pull/674
+
+## 0.9.5 (August 14, 2024)
+
+### ENHANCEMENTS
+* Introduce message iterator to avoid loading all messages into memory at once upon resend request https://github.com/quickfixgo/quickfix/pull/659
+* Only lock fieldmap once during message parsing https://github.com/quickfixgo/quickfix/pull/658
+* Optimize tag value parsing https://github.com/quickfixgo/quickfix/pull/657
+* Use bytes.Count to count the number of message fields https://github.com/quickfixgo/quickfix/pull/655
+* Port config documentation into proper go doc format https://github.com/quickfixgo/quickfix/pull/649
+* Support TLS configuration as raw bytes https://github.com/quickfixgo/quickfix/pull/647
+
+### BUG FIXES
+* Use the Go generated file convention https://github.com/quickfixgo/quickfix/pull/660
+* Fix stuck call to Dial when calling Stop on the Initiator https://github.com/quickfixgo/quickfix/pull/654
+* Do not increment NextTargetMsgSeqNum for out of sequence Logout and Test Requests https://github.com/quickfixgo/quickfix/pull/645
+
+## 0.9.4 (May 29, 2024)
+
+### ENHANCEMENTS
+* Adds log to readLoop just like writeLoop https://github.com/quickfixgo/quickfix/pull/642
+
+### BUG FIXES
+* Maintain repeating group field order when parsing messages  https://github.com/quickfixgo/quickfix/pull/636
+
+## 0.9.3 (May 9, 2024)
+
+### BUG FIXES
+* Change filestore.offsets from map[int]msgDef to sync.Map https://github.com/quickfixgo/quickfix/pull/639
+* Unregister sessions on stop https://github.com/quickfixgo/quickfix/pull/637
+* Corrects ResetOnLogon behavior for initiators https://github.com/quickfixgo/quickfix/pull/635
+
+### FEATURES
+* Add AllowUnknownMessageFields & CheckUserDefinedFields settings as included in QuickFIX/J https://github.com/quickfixgo/quickfix/pull/632
+
+## 0.9.2 (April 23, 2024)
+
+### BUG FIXES
+* Prevent message queue blocking in the case of network connection trouble https://github.com/quickfixgo/quickfix/pull/615 https://github.com/quickfixgo/quickfix/pull/628
+* Corrects validation of multiple repeating groups with different fields https://github.com/quickfixgo/quickfix/pull/623
+
 ## 0.9.1 (April 15, 2024)
+
+### BUG FIXES
 * Preserve original body when resending https://github.com/quickfixgo/quickfix/pull/624
 
 ## 0.9.0 (November 13, 2023)

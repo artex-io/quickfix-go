@@ -49,6 +49,14 @@ func (sm *stateMachine) Connect(session *session) {
 			return
 		}
 	}
+
+	if session.ResetOnLogon {
+		if err := session.store.Reset(); err != nil {
+			session.logError(err)
+			return
+		}
+	}
+
 	session.log.OnEvent("Sending logon request")
 	if err := session.sendLogon(); err != nil {
 		session.logError(err)
@@ -105,7 +113,7 @@ func (sm *stateMachine) SendAppMessages(session *session) {
 	defer session.sendMutex.Unlock()
 
 	if session.IsLoggedOn() {
-		session.sendQueued()
+		session.sendQueued(false)
 	} else {
 		session.dropQueued()
 	}
