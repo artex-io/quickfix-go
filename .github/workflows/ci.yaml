@@ -191,9 +191,14 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.0'
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.11.0
+        with:
+          mongodb-replica-set: replicaset
       - name: Acceptance test
         env:
           GO111MODULE: on
+          MONGODB_TEST_CXN: mongodb://localhost:27017
           FIX_TEST: ${{ matrix.fix-version }}
           STORE_TYPE: mongo
           ACCEPTANCE_SET: server
